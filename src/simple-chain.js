@@ -13,10 +13,13 @@ const chainMaker = {
       !Number.isInteger(position) ||
       position < 0 ||
       position >= this.arr.length
-    )
+    ) {
+      this.arr = [];
       throw Error("Error");
-    this.arr.splice(position, 1);
-    return this;
+    } else {
+      this.arr.splice(position - 1, 1);
+      return this;
+    }
   },
   reverseChain() {
     this.arr.reverse();
@@ -24,7 +27,7 @@ const chainMaker = {
   },
   finishChain() {
     let result = this.arr.join("~~");
-    this.arr.splice(0, this.arr.length);
+    this.arr = [];
     return result;
   },
 };
