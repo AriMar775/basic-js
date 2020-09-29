@@ -1,9 +1,11 @@
 module.exports = function repeater(str, options) {
   if(!str) throw Error("Error");
+  
   let result = "";
   let resultAddition = "";
   let separator = "+";
   let additionSeparator = "|";
+
   if (options.separator) separator = options.separator.toString();
   if (options.addition) resultAddition = options.addition.toString();
   if (options.additionSeparator) additionSeparator = options.additionSeparator.toString();
@@ -13,7 +15,7 @@ module.exports = function repeater(str, options) {
       resultAddition +=  additionSeparator + options.addition;
     }
   }
-
+  
   result =  str + resultAddition;
 
   if(options.repeatTimes && options.repeatTimes > 0) {
