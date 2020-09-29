@@ -7,14 +7,14 @@ class VigenereCipheringMachine {
   asciiDiff = 97;
 
   _normalizeKey(length, key) {
-    let result = key;
+    let result = key.toLowerCase();
     let index = 0;
 
     for (let i = key.length; i < length; i++) {
       if (index === key.length) {
         index = 0;
       }
-      result += key[index];
+      result += result[index];
       index++;
     }
 
@@ -24,21 +24,22 @@ class VigenereCipheringMachine {
   encrypt(message, key) {
     if (!message || !key) throw Error("Error");
 
+    let newMessage = message.toLowerCase();
     let result = "";
     let normalizedKey = this._normalizeKey(
-      message.replace(" ", "").length,
+      newMessage.replace(" ", "").length,
       key
     );
     let counter = 0;
 
-    for (let i = 0; i < message.length; i++) {
-      if (!/[A-Za-z]/g.test(message[i])) {
-        result += message[i];
+    for (let i = 0; i < newMessage.length; i++) {
+      if (!/[a-z]/g.test(newMessage[i])) {
+        result += newMessage[i];
         counter++;
         continue;
       }
       result += String.fromCharCode(
-        ((message.charCodeAt(i) +
+        ((newMessage.charCodeAt(i) +
           normalizedKey.charCodeAt(i - counter) -
           this.asciiDiff * 2) %
           this.alphabetLength) +
@@ -55,27 +56,34 @@ class VigenereCipheringMachine {
   decrypt(message, key) {
     if (!message || !key) throw Error("Error");
 
+    let newMessage = message.toLowerCase();
     let result = "";
     let normalizedKey = this._normalizeKey(
-      message.replace(" ", "").length,
+      newMessage.replace(" ", "").length,
       key
     );
     let counter = 0;
 
-    for (let i = 0; i < message.length; i++) {
-      if (!/[A-Za-z]/g.test(message[i])) {
-        result += message[i];
+    for (let i = 0; i < newMessage.length; i++) {
+      if (!/[a-z]/g.test(newMessage[i])) {
+        result += newMessage[i];
         counter++;
         continue;
       }
-      result += String.fromCharCode(
-        ((message.charCodeAt(i) +
-          this.alphabetLength -
-          normalizedKey.charCodeAt(i - counter) -
-          this.asciiDiff * 2) %
-          this.alphabetLength) +
-          this.asciiDiff
-      );
+      if (normalizedKey.charCodeAt(i - counter) > newMessage.charCodeAt(i)) {
+        result += String.fromCharCode(
+          ((newMessage.charCodeAt(i) -
+            normalizedKey.charCodeAt(i - counter) +
+            26) %
+            this.alphabetLength) +
+            this.asciiDiff
+        );
+      } else
+        result += String.fromCharCode(
+          ((newMessage.charCodeAt(i) - normalizedKey.charCodeAt(i - counter)) %
+            this.alphabetLength) +
+            this.asciiDiff
+        );
     }
 
     return (this.modification
@@ -86,10 +94,3 @@ class VigenereCipheringMachine {
 }
 
 module.exports = VigenereCipheringMachine;
-// const directMachine = new VigenereCipheringMachine();
-// assert.equal(
-//   directMachine.encrypt("attack at dawn!", "alphonse"),
-//   "AEIHQX SX DLLU!"
-// );
-
-// console.log(directMachine.encrypt("attack at dawn!", "alphonse"));
